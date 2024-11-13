@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  app:
+    build:
+      args:
+          user: "${DOCKER_USER}"
+          uid: "${DOCKER_USER_UID}"    # Not required for windows
+      context: .
+      dockerfile: docker/app/Dockerfile
+    env_file:
+      - .env
+    image: prueba
+    container_name: prueba-app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./:/var/www/app
+
+  nginx:
+    image: nginx:alpine
+    container_name: prueba-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8000:80"
+      - "8443:443"
+    volumes:
+      - ./:/var/www/app
+      - ./docker/nginx:/etc/nginx/conf.d
